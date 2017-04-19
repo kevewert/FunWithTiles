@@ -1,4 +1,4 @@
-This project is meant to be used with Reddit's "Place" dataset.
+This project is just me playing around with Reddit's "Place" dataset.
 
 Link: https://www.reddit.com/r/redditdata/comments/6640ru/place_datasets_april_fools_2017/
 
