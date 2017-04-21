@@ -1,14 +1,13 @@
 import java.io.{ByteArrayInputStream, File, SequenceInputStream}
 import java.nio.file.{Files, Paths}
 import java.util
+import java.util.Calendar
 
 import com.github.tototoshi.csv._
 
 import scala.collection.immutable.ListMap
 import scala.collection.JavaConverters._
 import javax.sound.sampled._
-
-import scala.util.Random
 
 object FunWithTiles
 {
@@ -29,9 +28,8 @@ object FunWithTiles
 		{
 			count += 1
 			val test = it.next()
-			//colorMap(test(4).toInt) += 1
-			//tsList.add(test(0).toLong/1000)
-			tileList.add(new Tile(test(0).toLong/1000, test(4).toInt))
+
+			tileList.add(new Tile(test(0).toLong, test(4).toInt))
 			if ((count % 1000000) == 0)
 			{
 				println(count + " rows read in " + (System.currentTimeMillis() - beginTime) / 1000 + " seconds")
@@ -59,7 +57,7 @@ object FunWithTiles
 			val temp = it2.next
 
 			colorMap(temp.colorNum) += 1
-			if ((temp.getTimeStamp() % 500 == 0) && temp.getTimeStamp() != usedTs)
+			if ((temp.getTimeStamp() % 648000 == 0) && temp.getTimeStamp() != usedTs)
 			{
 				val test = ListMap(colorMap.toSeq.sortWith(_._2 > _._2):_*)
 
@@ -126,9 +124,6 @@ object FunWithTiles
 		val it1 = noteList1.iterator()
 		val it2 = noteList2.iterator()
 		val it3 = noteList3.iterator()
-		var inSound = Array[Byte]()
-		var inSound2 = Array[Byte]()
-		var inSound3 = Array[Byte]()
 		var temp3 = new Note(0L, 0, 0)
 		var count = 0
 
@@ -138,68 +133,14 @@ object FunWithTiles
 		{
 			val temp1 = it1.next()
 			val temp2 = it2.next()
+
+			//only every 4th iteration, use the 3rd note
 			if (count % 4 == 0 && it3.hasNext)
 				temp3 = it3.next()
 
-			temp1.noteKey match
-			{
-				case 0 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
-				case 1 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\g.wav"))
-				case 2 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\e.wav"))
-				case 3 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\d.wav"))
-				case 4 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\c.wav"))
-				case 5 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
-				case 6 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\g.wav"))
-				case 7 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\g.wav"))
-				case 8 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\e.wav"))
-				case 9 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\e.wav"))
-				case 10 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\d.wav"))
-				case 11 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\d.wav"))
-				case 12 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\c.wav"))
-				case 13 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\c.wav"))
-				case 14 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
-				case 15 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
-			}
-
-			temp2.noteKey match
-			{
-				case 0 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
-				case 1 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
-				case 2 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\c.wav"))
-				case 3 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\c.wav"))
-				case 4 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\d.wav"))
-				case 5 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\d.wav"))
-				case 6 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\e.wav"))
-				case 7 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\e.wav"))
-				case 8 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\g.wav"))
-				case 9 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\g.wav"))
-				case 10 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
-				case 11 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\c.wav"))
-				case 12 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\d.wav"))
-				case 13 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\e.wav"))
-				case 14 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\g.wav"))
-				case 15 => inSound2 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
-			}
-
-			temp3.noteKey match
-			{
-				case 0 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
-				case 1 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
-				case 2 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\c.wav"))
-				case 3 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\c.wav"))
-				case 4 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\d.wav"))
-				case 5 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\d.wav"))
-				case 6 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\e.wav"))
-				case 7 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\e.wav"))
-				case 8 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\g.wav"))
-				case 9 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\g.wav"))
-				case 10 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
-				case 11 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\c.wav"))
-				case 12 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\d.wav"))
-				case 13 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\e.wav"))
-				case 14 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\g.wav"))
-				case 15 => inSound3 = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
-			}
+			val inSound = getSound(temp1.noteKey)
+			val inSound2 = getSound(temp2.noteKey)
+			val inSound3 = getSound(temp3.noteKey)
 
 			var length = 0
 			if (inSound.length < inSound2.length && inSound.length < inSound3.length)
@@ -245,6 +186,33 @@ object FunWithTiles
 			count += 1
 			Thread sleep(333)
 		}
+	}
+
+	def getSound(noteKey : Int): Array[Byte] =
+	{
+		var inSound = Array[Byte]()
+
+		noteKey match
+		{
+			case 0 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
+			case 1 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\g.wav"))
+			case 2 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\e.wav"))
+			case 3 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\d.wav"))
+			case 4 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\c.wav"))
+			case 5 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
+			case 6 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\g.wav"))
+			case 7 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\g.wav"))
+			case 8 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\e.wav"))
+			case 9 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\e.wav"))
+			case 10 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\d.wav"))
+			case 11 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\d.wav"))
+			case 12 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\c.wav"))
+			case 13 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\c.wav"))
+			case 14 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
+			case 15 => inSound = Files.readAllBytes(Paths.get("resources\\piano_sounds\\a.wav"))
+		}
+
+		inSound
 	}
 
 	private class Tile(ts : Long, num : Int)
